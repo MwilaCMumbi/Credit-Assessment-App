@@ -1,2 +1,11 @@
-streamlit==1.29.0
-sqlite3==2.6.0
+# Core Dependencies
+streamlit>=1.29.0
+sqlite3>=2.6.0
+
+# Development Extras (optional)
+pytest>=7.0.0
+black>=22.0.0
+flake8>=4.0.0
+
+# Database Tools (optional)
+sqlite-web>=0.4.1
