@@ -1,6 +1,5 @@
 # Core Dependencies
 streamlit>=1.29.0
-sqlite3>=2.6.0
 
 # Development Extras (optional)
 pytest>=7.0.0
