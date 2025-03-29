@@ -1,11 +1,38 @@
 import streamlit as st
-import sqlite3
+import hashlib
 
 # Set page title and icon
 st.set_page_config(
     page_title="VZ Credit Score App",
     page_icon="📊",
 )
+
+# Security functions
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
+
+def verify_user(username, password):
+    # Simplified authentication without database
+    if username == "admin" and password == "admin123":
+        return {"id": 1, "role": "admin", "full_name": "Administrator"}
+    return None
+
+def get_current_user():
+    return st.session_state.get("user")
+
+def is_admin():
+    user = get_current_user()
+    return user and user.get("role") == "admin"
+
+def is_regular_user():
+    user = get_current_user()
+    return user and user.get("role") == "user"
+
+def logout():
+    if "user" in st.session_state:
+        del st.session_state["user"]
+    st.session_state.step = 1
+    st.rerun()
 
 # Initialize session state
 if "step" not in st.session_state:
@@ -18,33 +45,30 @@ if "step" not in st.session_state:
     st.session_state.banking_access = 0
     st.session_state.referral = 0
 
-# Database setup
-def init_db():
-    conn = sqlite3.connect("credit_scores.db")
-    c = conn.cursor()
-    c.execute(
-        """CREATE TABLE IF NOT EXISTS credit_assessments (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            customer_name TEXT,
-            credit_score REAL,
-            risk_category TEXT,
-            recommended_products TEXT
-        )"""
-    )
-    conn.commit()
-    conn.close()
+# Login page
+def login_page():
+    st.title("VZ Credit Score App - Login")
+    
+    with st.form("login_form"):
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        submitted = st.form_submit_button("Login")
+        
+        if submitted:
+            user = verify_user(username, password)
+            if user:
+                st.session_state.user = user
+                st.session_state.step = 1  # Reset to first step
+                st.rerun()
+            else:
+                st.error("Invalid username or password")
 
-def save_to_db(customer_name, credit_score, risk_category, recommended_products):
-    conn = sqlite3.connect("credit_scores.db")
-    c = conn.cursor()
-    c.execute(
-        """INSERT INTO credit_assessments (customer_name, credit_score, risk_category, recommended_products)
-        VALUES (?, ?, ?, ?)""",
-        (customer_name, credit_score, risk_category, recommended_products),
-    )
-    conn.commit()
-    conn.close()
+# User management functions (simplified without database)
+def user_management():
+    st.subheader("User Management")
+    st.warning("User management is currently in demo mode. For full functionality, please enable database storage.")
 
+# Credit scoring functions (unchanged from your original)
 def get_credit_history_score(is_new_customer):
     if is_new_customer:
         options = {
@@ -166,9 +190,25 @@ def get_recommended_products(risk_category):
         "Rejected": "Rejected (No Products Recommended)"
     }[risk_category]
 
+# Main app function
 def main():
+    if "user" not in st.session_state:
+        login_page()
+        return
+    
+    # Add logout button to sidebar
+    st.sidebar.title(f"Welcome, {st.session_state.user.get('full_name', 'User')}")
+    if st.sidebar.button("Logout"):
+        logout()
+    
+    # Show admin options
+    if is_admin():
+        if st.sidebar.checkbox("User Management"):
+            user_management()
+            return
+    
+    # Main app content
     st.title("VZ Credit Score App")
-    init_db()
 
     if st.session_state.step == 1:
         st.subheader("Step 1: Customer Details")
@@ -243,13 +283,7 @@ def main():
         st.write(f"Referral (10%): {st.session_state.referral} → {st.session_state.referral * 0.10:.2f}")
         
         if st.button("Save Assessment"):
-            save_to_db(
-                st.session_state.customer_name,
-                credit_score,
-                risk_category,
-                get_recommended_products(risk_category),
-            )
-            st.success("Assessment saved to database!")
+            st.success("Assessment completed! (Storage not enabled)")
         
         if st.button("Start New Assessment"):
             st.session_state.step = 1
