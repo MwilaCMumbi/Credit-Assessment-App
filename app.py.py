@@ -8,7 +8,7 @@ from io import BytesIO
 
 # Set page title and icon
 st.set_page_config(
-    page_title="VZ Credit Score App",
+    page_title="Credit Score App",
     page_icon="📊",
     layout="wide"
 )
