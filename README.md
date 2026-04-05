@@ -1,4 +1,4 @@
-VZ Credit Score App
+This Credit Score App
 Credit risk assessment tool that calculates scores and recommends financial products.
 
 Installation
