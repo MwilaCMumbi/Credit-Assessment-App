@@ -1,5 +1,4 @@
-This Credit Score App
-Credit risk assessment tool that calculates scores and recommends financial products.
+This is a Credit risk assessment tool built to calculate credit scores and recommends financial products to customers.
 
 Installation
 
