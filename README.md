@@ -1,4 +1,4 @@
-This is a Credit risk assessment tool built to calculate credit scores and recommends financial products to customers.
+This is a Credit risk assessment tool built to calculate credit scores and recommend financial products to customers.
 
 Installation
 
