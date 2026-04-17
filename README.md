@@ -32,5 +32,5 @@ score = (history*0.30 + income*0.25 +
          referral*0.10)
 
 
-📜 License
+License
 MIT License - Free for commercial and personal use
